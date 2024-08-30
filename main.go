@@ -1,30 +1,18 @@
 package main
 
-import "fmt"
-
-const (
-	mutexLocked = 1 << iota
-	mutexWoken
-	mutexStarving
-	mutexStarving1
-	mutexStarving2
-	mutexStarving3
-	mutexStarving4
-	mutexStarving5
-	mutexWaiterShift = iota
+import (
+	"daily/lib"
+	"daily/sniffer"
+	"fmt"
 )
 
 func main() {
-	// println(mutexLocked)
-	// println(mutexWoken)
-	// println(mutexStarving)
-	// println(mutexStarving1)
-	// println(mutexStarving2)
-	// println(mutexStarving3)
-	// println(mutexStarving4)
-	// println(mutexStarving5)
-	// println(mutexWaiterShift)
+	httpSniffer := &sniffer.HttpSniffer{Url: CHNROUTE_URL_APNIC}
 
-	q := [...]int{1, 2, 3}
-	fmt.Printf("%T\n", q) // "[3]int"
+	checkFormat(httpSniffer)
+}
+
+func checkFormat(s sniffer.Sniffer) {
+	line, _ := s.Sniff(4096)
+	fmt.Println(lib.IsAPNICFormat(fmt.Sprintln(line)))
 }

@@ -11,11 +11,8 @@ import (
 	"strings"
 )
 
-const APNIC_URL = "https://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest"
-const IPIP_URL = "https://raw.githubusercontent.com/17mon/china_ip_list/master/china_ip_list.txt"
-
 func GetApnicList() {
-	resp, err := http.Get(APNIC_URL)
+	resp, err := http.Get(URL_APNIC)
 	if err != nil {
 		log.Fatalf("Cannot fetch APNIC_URL: %s", err)
 	}
@@ -40,7 +37,7 @@ func GetApnicList() {
 }
 
 func GetIpipList() {
-	append()
+
 }
 
 func mergeCIDRs(cidrs []netip.Prefix) []netip.Prefix {
