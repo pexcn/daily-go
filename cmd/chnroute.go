@@ -14,6 +14,10 @@ var chnrouteCmd = &cobra.Command{
 	Args:  cobra.NoArgs,
 	PreRun: func(cmd *cobra.Command, args []string) {
 		chnrouteFlag.GlobalFlag = *globalFlag
+		// workaround for https://github.com/spf13/cobra/issues/1752
+		if chnrouteFlag.Ipv6 {
+			chnrouteFlag.Ipv4 = false
+		}
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		chnroute.Run(cmd, chnrouteFlag)
