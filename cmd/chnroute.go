@@ -27,6 +27,9 @@ var chnrouteCmd = &cobra.Command{
 var chnrouteFlag = &config.ChnrouteFlag{}
 
 func init() {
+	chnrouteCmd.Flags().SortFlags = false
+	rootCmd.AddCommand(chnrouteCmd)
+
 	chnrouteCmd.Flags().StringSliceVarP(&chnrouteFlag.Url, "url", "u", []string{}, "Input your URLs")
 	chnrouteCmd.Flags().StringSliceVarP(&chnrouteFlag.File, "file", "f", []string{}, "Input your files")
 	chnrouteCmd.Flags().StringVarP(&chnrouteFlag.Output, "output", "o", "", "Output file")
@@ -36,7 +39,4 @@ func init() {
 	chnrouteCmd.MarkFlagsOneRequired("url", "file")
 	//chnrouteCmd.MarkFlagsMutuallyExclusive("url", "file")
 	chnrouteCmd.MarkFlagsMutuallyExclusive("ipv4", "ipv6")
-
-	chnrouteCmd.Flags().SortFlags = false
-	rootCmd.AddCommand(chnrouteCmd)
 }

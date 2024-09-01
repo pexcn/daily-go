@@ -14,12 +14,17 @@ import (
 )
 
 func Run(cmd *cobra.Command, flag *config.ChnrouteFlag) {
-	fmt.Println("URL:", flag.Url)
-	fmt.Println("File:", flag.File)
-	fmt.Println("Output:", flag.Output)
-	fmt.Println("IPv4:", flag.Ipv4)
-	fmt.Println("IPv6:", flag.Ipv6)
-	fmt.Println("Verbose:", flag.Verbose)
+	// fmt.Println("URL:", flag.Url)
+	// fmt.Println("File:", flag.File)
+	// fmt.Println("Output:", flag.Output)
+	// fmt.Println("IPv4:", flag.Ipv4)
+	// fmt.Println("IPv6:", flag.Ipv6)
+	// fmt.Println("Verbose:", flag.Verbose)
+
+	for _, url := range flag.Url {
+		go fmt.Println(url)
+	}
+
 }
 
 func GetApnicList() {

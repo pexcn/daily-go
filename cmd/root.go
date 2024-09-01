@@ -13,11 +13,11 @@ var rootCmd = &cobra.Command{
 	Long:  `A daily list generator, written in Go. 🚀`,
 	// TODO: get version from build date
 	Version: "0.1",
-	// CompletionOptions: cobra.CompletionOptions{
-	// 	DisableDefaultCmd: true,
-	// },
-	// Run: func(cmd *cobra.Command, args []string) {
-	// },
+	CompletionOptions: cobra.CompletionOptions{
+		DisableDefaultCmd: true,
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+	},
 }
 
 func Execute() {
@@ -32,7 +32,7 @@ var globalFlag = &config.GlobalFlag{}
 func init() {
 	rootCmd.PersistentFlags().BoolVarP(&globalFlag.Verbose, "verbose", "v", false, "Verbose output")
 
-	rootCmd.CompletionOptions.DisableDefaultCmd = true
+	//rootCmd.CompletionOptions.DisableDefaultCmd = true
 	rootCmd.Flags().SortFlags = false
 	rootCmd.SetHelpCommand(&cobra.Command{Hidden: true})
 }
