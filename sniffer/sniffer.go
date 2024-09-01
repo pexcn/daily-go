@@ -38,7 +38,7 @@ func (s *HttpSniffer) Sniff(size int) (penultimate string, err error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusPartialContent {
-		err = fmt.Errorf("server unsupport request partial content: %w", err)
+		err = fmt.Errorf("server unsupport request partial content")
 		return
 	}
 

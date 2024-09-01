@@ -3,12 +3,15 @@ package chnroute
 import (
 	"bufio"
 	"daily/config"
+	"daily/lib"
+	"daily/sniffer"
 	"fmt"
 	"log"
 	"math"
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/spf13/cobra"
 )
@@ -21,10 +24,47 @@ func Run(cmd *cobra.Command, flag *config.ChnrouteFlag) {
 	// fmt.Println("IPv6:", flag.Ipv6)
 	// fmt.Println("Verbose:", flag.Verbose)
 
+	var wg sync.WaitGroup
+
 	for _, url := range flag.Url {
-		go fmt.Println(url)
+		wg.Add(1)
+
+		go func(u string) {
+			defer wg.Done()
+			sniffer := &sniffer.HttpSniffer{Url: u}
+			line := fetchPenultimateLine(sniffer)
+			if !isValid(line) {
+				log.Fatal("there is a URL with invalid content format: ", u)
+			}
+		}(url)
 	}
 
+	// for _, file := range flag.File {
+	// 	// 每启动一个 Goroutine，计数器加一
+	// 	wg.Add(1)
+	// 	// 启动 Goroutine
+	// 	go func(f string) {
+	// 		// 确保在 Goroutine 完成时计数器减一
+	// 		defer wg.Done()
+	// 		fmt.Println(f)
+	// 		time.Sleep(1 * time.Second)
+	// 	}(file)
+	// }
+
+	wg.Wait()
+
+}
+
+func fetchPenultimateLine(s sniffer.Sniffer) string {
+	line, err := s.Sniff(4096)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return line
+}
+
+func isValid(line string) bool {
+	return lib.IsIP(line) || lib.IsCIDR(line) || lib.IsAPNICFormat(line)
 }
 
 func GetApnicList() {
