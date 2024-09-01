@@ -28,8 +28,7 @@ func IsCIDR(line string) bool {
 }
 
 func IsAPNICFormat(line string) bool {
-	fields := strings.Split(line, "|")
-	for _, word := range fields {
+	for _, word := range strings.Split(line, "|") {
 		if strings.ToLower(word) == "apnic" {
 			return true
 		}

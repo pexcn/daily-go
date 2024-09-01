@@ -1,18 +1,27 @@
 package main
 
 import (
-	"daily/lib"
-	"daily/sniffer"
-	"fmt"
+	"daily/cmd"
 )
 
 func main() {
-	httpSniffer := &sniffer.HttpSniffer{Url: CHNROUTE_URL_APNIC}
+	cmd.Execute()
 
-	checkFormat(httpSniffer)
+	// httpSniffer := &sniffer.HttpSniffer{Url: config.CHNROUTE_URL_APNIC}
+	// fetchContent(httpSniffer)
 }
 
-func checkFormat(s sniffer.Sniffer) {
-	line, _ := s.Sniff(4096)
-	fmt.Println(lib.IsAPNICFormat(fmt.Sprintln(line)))
-}
+// func fetchContent(s sniffer.Sniffer) {
+// 	line, _ := s.Sniff(4096)
+// 	if !isValid(line) {
+
+// 		return
+// 	}
+// }
+
+// func isValid(s string) bool {
+// 	if lib.IsAPNICFormat(s) || lib.IsIP(s) || lib.IsCIDR(s) {
+// 		return true
+// 	}
+// 	return false
+// }

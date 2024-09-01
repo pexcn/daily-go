@@ -1,53 +1,38 @@
 package cmd
 
 import (
-	"bufio"
-	"fmt"
-	"log"
-	"math"
-	"net/http"
-	"net/netip"
-	"strconv"
-	"strings"
+	"daily/chnroute"
+	"daily/config"
+
+	"github.com/spf13/cobra"
 )
 
-func GetApnicList() {
-	resp, err := http.Get(URL_APNIC)
-	if err != nil {
-		log.Fatalf("Cannot fetch APNIC_URL: %s", err)
-	}
-	defer resp.Body.Close()
-
-	// convert to cidr format, like https://github.com/pexcn/daily/blob/f31f71d/scripts/chnroute/chnroute.sh#L25
-	scanner := bufio.NewScanner(resp.Body)
-	for scanner.Scan() {
-		line := scanner.Text()
-		if strings.Contains(line, "ipv4") && strings.Contains(line, "CN") {
-			fields := strings.Split(line, "|")
-			if len(fields) < 5 {
-				// without mask, skip
-				continue
-			}
-			ip := fields[3]
-			size, _ := strconv.Atoi(fields[4])
-			mask := 32 - int(math.Log2(float64(size)))
-			fmt.Printf("%s/%d\n", ip, mask)
-		}
-	}
+var chnrouteCmd = &cobra.Command{
+	Use:   "chnroute",
+	Short: "China routing table generator",
+	Long:  `China routing table generator.`,
+	Args:  cobra.NoArgs,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		chnrouteFlag.GlobalFlag = *globalFlag
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		chnroute.Run(cmd, chnrouteFlag)
+	},
 }
 
-func GetIpipList() {
+var chnrouteFlag = &config.ChnrouteFlag{}
 
-}
+func init() {
+	chnrouteCmd.Flags().StringSliceVarP(&chnrouteFlag.Url, "url", "u", []string{}, "Input your URLs")
+	chnrouteCmd.Flags().StringSliceVarP(&chnrouteFlag.File, "file", "f", []string{}, "Input your files")
+	chnrouteCmd.Flags().StringVarP(&chnrouteFlag.Output, "output", "o", "", "Output file")
+	chnrouteCmd.Flags().BoolVarP(&chnrouteFlag.Ipv4, "ipv4", "4", true, "Parse as IPv4 address")
+	chnrouteCmd.Flags().BoolVarP(&chnrouteFlag.Ipv6, "ipv6", "6", false, "Parse as IPv6 address")
 
-func mergeCIDRs(cidrs []netip.Prefix) []netip.Prefix {
-	var b netipx.IPSetBuilder
-	for _, cidr := range cidrs {
-		b.AddPrefix(cidr)
-	}
-	// ignore errors on purpose to avoid errors in single cidr causing fail output,
-	// see comment for IPSetBuilder.IPSet()
-	ipset, _ := b.IPSet()
+	chnrouteCmd.MarkFlagsOneRequired("url", "file")
+	//chnrouteCmd.MarkFlagsMutuallyExclusive("url", "file")
+	chnrouteCmd.MarkFlagsMutuallyExclusive("ipv4", "ipv6")
 
-	return ipset.Prefixes()
+	chnrouteCmd.Flags().SortFlags = false
+	rootCmd.AddCommand(chnrouteCmd)
 }
