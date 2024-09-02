@@ -2,7 +2,6 @@ package lib
 
 import (
 	"net"
-	"strings"
 )
 
 // func HttpGet(url string) (string, error) {
@@ -25,13 +24,4 @@ func IsIP(line string) bool {
 func IsCIDR(line string) bool {
 	_, _, err := net.ParseCIDR(line)
 	return err == nil
-}
-
-func IsAPNICFormat(line string) bool {
-	for _, word := range strings.Split(line, "|") {
-		if strings.ToLower(word) == "apnic" {
-			return true
-		}
-	}
-	return false
 }

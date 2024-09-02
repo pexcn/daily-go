@@ -4,29 +4,33 @@ import (
 	"bufio"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 type Sniffer interface {
-	Sniff(size int) (string, error)
+	Sniff() (string, error)
 }
 
 type HttpSniffer struct {
-	Url string
+	Url  string
+	Size int
 }
 
 type FileSniffer struct {
 	Path string
+	Size int
 }
 
-func (s *HttpSniffer) Sniff(size int) (penultimate string, err error) {
+func (s *HttpSniffer) Sniff() (penultimate string, err error) {
 	req, err := http.NewRequest(http.MethodGet, s.Url, nil)
 	if err != nil {
 		err = fmt.Errorf("failed to parse %v: %w", s.Url, err)
 		return
 	}
 
-	req.Header.Set("Range", fmt.Sprintf("bytes=0-%d", size-1))
+	req.Header.Set("Range", fmt.Sprintf("bytes=0-%d", s.Size-1))
 	client := &http.Client{
+		Timeout:   10 * time.Second,
 		Transport: &http.Transport{},
 	}
 
@@ -38,7 +42,7 @@ func (s *HttpSniffer) Sniff(size int) (penultimate string, err error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusPartialContent {
-		err = fmt.Errorf("server unsupport request partial content")
+		err = fmt.Errorf("the url %s is unsupport request partial content", s.Url)
 		return
 	}
 
@@ -52,6 +56,6 @@ func (s *HttpSniffer) Sniff(size int) (penultimate string, err error) {
 	return prevLine, nil
 }
 
-func (s *FileSniffer) Sniff(size int) (penultimate string, err error) {
+func (s *FileSniffer) Sniff() (penultimate string, err error) {
 	return
 }
